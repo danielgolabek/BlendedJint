@@ -2407,5 +2407,24 @@ namespace Jint.Tests.Runtime
             var actualValue = engine.Execute(actual).GetCompletionValue().ToObject();
             Assert.Equal(expectedValue, actualValue);
         }
+
+        [Fact]
+        public void ReturnsStringWithinGraveAccent()
+        {
+            // 53.6841659 cannot be converted by V8's DToA => "old" DToA code will be used.
+
+            var engine = new Engine();
+            Native.JsValue val = engine.Execute(@"
+  function main()
+  {
+  var x = `SELECT * FROM Customers
+WHERE Country='Mexico'`;
+  return x;
+  }
+  main();
+  ").GetCompletionValue();
+
+            Assert.Equal("SELECT * FROM Customers\r\nWHERE Country='Mexico'", val.AsString());
+        }
     }
 }

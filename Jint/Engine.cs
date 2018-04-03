@@ -471,6 +471,9 @@ namespace Jint
                 case Nodes.Identifier:
                     return _expressions.EvaluateIdentifier(expression.As<Identifier>());
 
+                case Nodes.TemplateLiteral:
+                    return _expressions.EvaluateLiteral(expression.As<TemplateLiteral>());
+
                 case Nodes.Literal:
                     return _expressions.EvaluateLiteral(expression.As<Literal>());
 

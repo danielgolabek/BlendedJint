@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Esprima;
 using Esprima.Ast;
@@ -652,6 +653,19 @@ namespace Jint.Runtime
 
             return JsValue.FromObject(_engine, literal.Value);
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public JsValue EvaluateLiteral(TemplateLiteral literal)
+        {
+            var templateElement = literal.Quasis.FirstOrDefault();
+            if (templateElement != null)
+            {
+                return JsValue.FromObject(_engine, templateElement.Value.Raw);
+            }
+
+            return JsValue.Null;
+        }
+
 
         public JsValue EvaluateObjectExpression(ObjectExpression objectExpression)
         {

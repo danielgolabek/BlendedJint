@@ -3,7 +3,13 @@
     <NeutralLanguage>en-US</NeutralLanguage>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyOriginatorKeyFile>Jint.snk</AssemblyOriginatorKeyFile>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
+    <Authors />
+    <PackageLicenseUrl>https://raw.githubusercontent.com/danielgolabek/BlendedJint/master/LICENSE.txt</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/danielgolabek/BlendedJint</PackageProjectUrl>
+    <RepositoryUrl>git://github.com/danielgolabek/BlendedJint</RepositoryUrl>
+    <Version>3.0.0.1</Version>
+    <PackageId>BlendedJint</PackageId>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Esprima" Version="1.0.0-beta-1026" />
