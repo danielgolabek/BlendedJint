@@ -8,8 +8,6 @@ using Jint.Parser.Ast;
 using Jint.Runtime;
 using Jint.Runtime.Debugger;
 using Xunit;
-using System.Dynamic;
-using System.Collections.Generic;
 
 namespace Jint.Tests.Runtime
 {
@@ -2179,127 +2177,6 @@ namespace Jint.Tests.Runtime
             var result = engine.Execute(source).GetCompletionValue().ToObject();
 
             Assert.Equal(expected, result);
-        }
-
-                [Fact]
-         public void ShouldStringifyComplexObject()
-         {
-             var engine = new Engine();
-             Native.JsValue val = engine.Execute(@"
- function main()
- {
-     var a = {""prop1"":""val1"",""prop2"": {""prop3"":""val3""}};
-     var b = JSON.stringify(a);
-     return b;
- }
- main();
- ").GetCompletionValue();
- 
-             Assert.Equal(@"{""prop1"":""val1"",""prop2"":{""prop3"":""val3""}}", val.AsString());
-         }
- 
-         [Fact]
-         public void ShouldStringifyComplexDotNetObject()
-         {
-             // 53.6841659 cannot be converted by V8's DToA => "old" DToA code will be used.
- 
-             var engine = new Engine();
-             engine.SetValue("newObj", new Func<object>(() => {
-                 Dictionary<string, object> prop2 = new Dictionary<string, object>();
-                 prop2["prop3"] = "val3";
-                 Dictionary<string, object> obj = new Dictionary<string, object>();
-                 obj["prop1"] = "val1";
-                 obj["prop2"] = prop2;
-                 return obj;
-             }));
-             Native.JsValue val = engine.Execute(@"
- function main()
- {
-     var a = newObj();
-     var b = JSON.stringify(a);
-     return b;
- }
- main();
- ").GetCompletionValue();
- 
-             Assert.Equal(@"{""prop1"":""val1"",""prop2"":{""prop3"":""val3""}}", val.AsString());
-         }
- 
-         [Fact]
-         public void ShouldStringifyDotNetArray()
-         {
-             // 53.6841659 cannot be converted by V8's DToA => "old" DToA code will be used.
- 
-             var engine = new Engine();
-             engine.SetValue("newObj", new Func<object>(() => {
- 
-                 Dictionary<string, object> obj = new Dictionary<string, object>();
-                 obj["prop1"] = "val1";
- 
-                 object[] array = new object[1];
-                 array[0] = obj;
- 
-                 return array;
-             }));
-             Native.JsValue val = engine.Execute(@"
- function main()
- {
-     var a = newObj();
-     var b = JSON.stringify(a);
-     return b;
- }
- main();
- ").GetCompletionValue();
- 
-             Assert.Equal(@"[{""prop1"":""val1""}]", val.AsString());
-         }
- 
-         [Fact]
-         public void ShouldStringifyDotNetList()
-         {
-             // 53.6841659 cannot be converted by V8's DToA => "old" DToA code will be used.
- 
-             var engine = new Engine();
-             engine.SetValue("newObj", new Func<object>(() => {
- 
-                 Dictionary<string, object> obj = new Dictionary<string, object>();
-                 obj["prop1"] = "val1";
- 
-                 List<object> list = new List<object>();
-                 list.Add(obj);
- 
-                 return list;
-             }));
-             Native.JsValue val = engine.Execute(@"
- function main()
- {
-     var a = newObj();
-     var b = JSON.stringify(a);
-     return b;
- }
- main();
- ").GetCompletionValue();
- 
-             Assert.Equal(@"[{""prop1"":""val1""}]", val.AsString());
-        }
-
-        [Fact]
-        public void ReturnsStringWithinGraveAccent()
-        {
-            // 53.6841659 cannot be converted by V8's DToA => "old" DToA code will be used.
-
-            var engine = new Engine();
-            Native.JsValue val = engine.Execute(@"
- function main()
- {
- var x = `SELECT * FROM Customers
-WHERE Country='Mexico'`;
- return x;
- }
- main();
- ").GetCompletionValue();
-
-            Assert.Equal("SELECT * FROM Customers\nWHERE Country='Mexico'", val.AsString());
         }
     }
 }
