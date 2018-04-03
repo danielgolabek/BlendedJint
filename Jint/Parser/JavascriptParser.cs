@@ -1047,7 +1047,19 @@ namespace Jint.Parser
                 }
                 else if (IsLineTerminator(ch))
                 {
-                    break;
+                    if (quote == 96) // if grave accent (#96)
+                    {
+                        ++_lineNumber;
+                        if (ch == '\r' && _source.CharCodeAt(_index) == '\n')
+                        {
+                            ++_index;
+                        }
+
+                        _lineStart = _index;
+                        str.Append("\n");
+                    }
+                    else
+                        break;
                 }
                 else
                 {
@@ -1263,8 +1275,8 @@ namespace Jint.Parser
                 return ScanPunctuator();
             }
 
-            // String literal starts with single quote (#39) or double quote (#34).
-            if (ch == 39 || ch == 34)
+            // String literal starts with single quote (#39) or double quote (#34) or grave accent (#96).
+            if (ch == 39 || ch == 34 || ch == 96)
             {
                 return ScanStringLiteral();
             }
