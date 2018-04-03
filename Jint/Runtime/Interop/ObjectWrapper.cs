@@ -5,6 +5,8 @@ using Jint.Native;
 using Jint.Native.Object;
 using Jint.Runtime.Descriptors;
 using Jint.Runtime.Descriptors.Specialized;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace Jint.Runtime.Interop
 {
@@ -156,6 +158,24 @@ namespace Jint.Runtime.Interop
                 }
             }
             return equals;
+        }
+
+        public override IEnumerable<KeyValuePair<string, PropertyDescriptor>> GetOwnProperties()
+        {
+            List<KeyValuePair<string, PropertyDescriptor>> properties =
+                new List<KeyValuePair<string, PropertyDescriptor>>(base.GetOwnProperties());
+            IDictionary<string, object> dicionary = Target as IDictionary<string, object>;
+            if (dicionary != null)
+            {
+                foreach (var prop in dicionary)
+                {
+                    JsValue jsValue = JsValue.FromObject(Engine, prop.Value);
+                    properties.Add(new KeyValuePair<string, PropertyDescriptor>(prop.Key,
+                        new PropertyDescriptor(jsValue, true, prop.Value is IEnumerable, true)));
+                }
+            }
+
+            return properties;
         }
     }
 }

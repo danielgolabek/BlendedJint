@@ -202,7 +202,7 @@ namespace Jint.Tests.Parser
         }
 
         [Fact]
-        public void ShouldProvideLocationForMultiLinesStringLiterals()
+        public void ShouldMultiLinesString()
         {
             var source = @"'\
 \
@@ -214,6 +214,68 @@ namespace Jint.Tests.Parser
             Assert.Equal(0, expr.Location.Start.Column);
             Assert.Equal(3, expr.Location.End.Line);
             Assert.Equal(1, expr.Location.End.Column);
+            Assert.Equal("\n\n\n", expr.As<Literal>().Value);
+        }
+
+        [Fact]
+        public void ShouldMultiLinesString_GraveAccent()
+        {
+            var source = @"`
+`
+";
+            var program = _parser.Parse(source);
+            var expr = program.Body.First().As<ExpressionStatement>().Expression;
+            Assert.Equal(1, expr.Location.Start.Line);
+            Assert.Equal(0, expr.Location.Start.Column);
+            Assert.Equal(2, expr.Location.End.Line);
+            Assert.Equal(1, expr.Location.End.Column);
+            Assert.Equal("\n", expr.As<Literal>().Value);
+        }
+
+        [Fact]
+        public void ShouldMultiLinesString_Sql()
+        {
+            var source = @"`
+SELECT * FROM Customers
+WHERE Country='Mexico';
+`
+";
+            var program = _parser.Parse(source);
+            var expr = program.Body.First().As<ExpressionStatement>().Expression;
+            Assert.Equal(1, expr.Location.Start.Line);
+            Assert.Equal(0, expr.Location.Start.Column);
+            Assert.Equal(4, expr.Location.End.Line);
+            Assert.Equal(1, expr.Location.End.Column);
+            Assert.Equal("\nSELECT * FROM Customers\nWHERE Country='Mexico';\n", expr.As<Literal>().Value);
+        }
+
+        [Fact]
+        public void ShouldMultiLinesString_DoubleQuotes()
+        {
+            var source = @"`
+""
+`
+";
+            var program = _parser.Parse(source);
+            var expr = program.Body.First().As<ExpressionStatement>().Expression;
+            Assert.Equal(1, expr.Location.Start.Line);
+            Assert.Equal(0, expr.Location.Start.Column);
+            Assert.Equal(3, expr.Location.End.Line);
+            Assert.Equal(1, expr.Location.End.Column);
+            Assert.Equal("\n\"\n", expr.As<Literal>().Value);
+        }
+
+        [Fact]
+        public void ShouldMultiLinesString_OneLine()
+        {
+            var source = @"`test`";
+            var program = _parser.Parse(source);
+            var expr = program.Body.First().As<ExpressionStatement>().Expression;
+            Assert.Equal(1, expr.Location.Start.Line);
+            Assert.Equal(0, expr.Location.Start.Column);
+            Assert.Equal(1, expr.Location.End.Line);
+            Assert.Equal(6, expr.Location.End.Column);
+            Assert.Equal("test", expr.As<Literal>().Value);
         }
 
     }
